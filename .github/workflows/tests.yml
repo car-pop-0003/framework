@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - run: |
-          curl --user $USB_HTTP_USERNAME:USB_HTTP_PASSWORD  "$MEDIA_URL" --output $MEDIA_ID --no-progress-meter
+          curl --user $USB_HTTP_USERNAME:$USB_HTTP_PASSWORD  "$MEDIA_URL" --output $MEDIA_ID --no-progress-meter
           sudo apt-get update > /dev/null
           sudo apt-get install ffmpeg awscli > /dev/null
           ffprobe -v quiet -print_format json -show_format -show_streams $MEDIA_ID
