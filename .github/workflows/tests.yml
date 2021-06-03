@@ -20,8 +20,8 @@ jobs:
       - name: Encode Audio
         run: |
           curl -u "$DOWNLOAD_USERNAME:$DOWNLOAD_PASSWORD" "$AUDIO_URL" --output media --no-progress-meter
-          apt-get update > /dev/null
-          apt-get install xz-utils ncftp > /dev/null
+          sudo apt-get update > /dev/null
+          sudo apt-get install xz-utils ncftp > /dev/null
           curl --location https://github.com/sateshpersaud/ffmpeg/releases/download/2021-04-14-2/ffmpeg.xz --output ffmpeg.xz --no-progress-meter
           xz --decompress ffmpeg.xz
           chmod +x ffmpeg
