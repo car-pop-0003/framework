@@ -12,22 +12,22 @@ env:
   FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
 
 jobs:
-#  encode-audio:
-#    name: Encode Audio
-#    runs-on: ubuntu-20.04
-#
-#    steps:
-#      - name: Encode Audio
-#        run: |
-#          curl -u "$DOWNLOAD_USERNAME:$DOWNLOAD_PASSWORD" "$AUDIO_URL" --output media --no-progress-meter
-#          sudo apt-get update > /dev/null
-#          sudo apt-get install xz-utils ncftp > /dev/null
-#          curl --location https://github.com/sateshpersaud/ffmpeg/releases/download/2021-04-14-2/ffmpeg.xz --output ffmpeg.xz --no-progress-meter
-#          xz --decompress ffmpeg.xz
-#          chmod +x ffmpeg
-#          mkdir --parents output
-#          ./ffmpeg -hide_banner -loglevel warning -i media -map 0:a:0 -codec:a:0 libopus -ac:a:0 2 -b:a:0 64k -map_metadata:g -1 -map_metadata:s:a:0 -1 -fflags +bitexact -flags:a:0 +bitexact -dash_segment_type mp4 -format_options movflags=skip_sidx:empty_hdlr_name=1 -seg_duration 10 -frag_duration 10 -init_seg_name 0 -media_seg_name '$Number$' -use_timeline 0 -hls_playlist 1 -f dash output/manifest.mpd
-#          ncftpput -V -z -m -u "$FTP_USERNAME" -p "$FTP_PASSWORD" ny.storage.bunnycdn.com "$MEDIA_KEY/a" output/*
+  #  encode-audio:
+  #    name: Encode Audio
+  #    runs-on: ubuntu-20.04
+  #
+  #    steps:
+  #      - name: Encode Audio
+  #        run: |
+  #          curl -u "$DOWNLOAD_USERNAME:$DOWNLOAD_PASSWORD" "$AUDIO_URL" --output media --no-progress-meter
+  #          sudo apt-get update > /dev/null
+  #          sudo apt-get install xz-utils ncftp > /dev/null
+  #          curl --location https://github.com/sateshpersaud/ffmpeg/releases/download/2021-04-14-2/ffmpeg.xz --output ffmpeg.xz --no-progress-meter
+  #          xz --decompress ffmpeg.xz
+  #          chmod +x ffmpeg
+  #          mkdir --parents output
+  #          ./ffmpeg -hide_banner -loglevel warning -i media -map 0:a:0 -codec:a:0 libopus -ac:a:0 2 -b:a:0 64k -map_metadata:g -1 -map_metadata:s:a:0 -1 -fflags +bitexact -flags:a:0 +bitexact -dash_segment_type mp4 -format_options movflags=skip_sidx:empty_hdlr_name=1 -seg_duration 10 -frag_duration 10 -init_seg_name 0 -media_seg_name '$Number$' -use_timeline 0 -hls_playlist 1 -f dash output/manifest.mpd
+  #          ncftpput -V -z -m -u "$FTP_USERNAME" -p "$FTP_PASSWORD" ny.storage.bunnycdn.com "$MEDIA_KEY/a" output/*
 
   encode-video-720p:
     name: Encode Video 720p
@@ -43,6 +43,6 @@ jobs:
           xz --decompress ffmpeg.xz
           chmod +x ffmpeg
           mkdir --parents output
-          ffmpeg -hide_banner -loglevel warning -i media -map 0:v:0 -codec:v:0 libx265 -crf 24 -preset slow -filter:v:0 scale=1280:-2 -x265-params no-open-gop=1:keyint=240:no-scenecut=1:no-info=1:vbv-maxrate=1200:vbv-bufsize=2400 video.mp4
-          ffmpeg -hide_banner -loglevel warning -i video.mp4 -map 0:v:0 -codec:v:0 copy -map_metadata:g -1 -map_metadata:s:v:0 -1 -fflags +bitexact -flags:v:0 +bitexact -dash_segment_type mp4 -format_options movflags=skip_sidx:empty_hdlr_name=1 -seg_duration 10 -frag_duration 10 -init_seg_name 0 -media_seg_name '$Number$' -use_timeline 0 -hls_playlist 1 -f dash output/manifest.mpd
+          ./ffmpeg -hide_banner -loglevel warning -i media -map 0:v:0 -codec:v:0 libx265 -crf 24 -preset slow -filter:v:0 scale=1280:-2 -x265-params no-open-gop=1:keyint=240:no-scenecut=1:no-info=1:vbv-maxrate=1200:vbv-bufsize=2400 video.mp4
+          ./ffmpeg -hide_banner -loglevel warning -i video.mp4 -map 0:v:0 -codec:v:0 copy -map_metadata:g -1 -map_metadata:s:v:0 -1 -fflags +bitexact -flags:v:0 +bitexact -dash_segment_type mp4 -format_options movflags=skip_sidx:empty_hdlr_name=1 -seg_duration 10 -frag_duration 10 -init_seg_name 0 -media_seg_name '$Number$' -use_timeline 0 -hls_playlist 1 -f dash output/manifest.mpd
           ncftpput -V -z -m -u "$FTP_USERNAME" -p "$FTP_PASSWORD" ny.storage.bunnycdn.com "$MEDIA_KEY/h" output/*
