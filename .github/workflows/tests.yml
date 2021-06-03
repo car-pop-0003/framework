@@ -1,23 +1,27 @@
+name: Tests
+
 on: workflow_dispatch
 
 env:
-  MEDIA_ID: m1
-  MEDIA_URL: https://rayquaza.lw997.usbx.me/files/Mortal.Kombat.2021.1080p.WEBRip.DD5.1.x264-CM/Mortal.Kombat.2021.1080p.WEBRip.DD5.1.x264-CM.mkv
-  USB_HTTP_USERNAME: ${{ secrets.USB_HTTP_USERNAME }}
-  USB_HTTP_PASSWORD: ${{ secrets.USB_HTTP_PASSWORD }}
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  EC2_METADATA_DISABLED: true
-  AWS_DEFAULT_REGION: 'us-east-1'
+  AUDIO_URL: https://rayquaza.lw997.usbx.me/files/Friends.S01.1080p.BluRay.x264-TENEIGHTY%5Brartv%5D/friends-s1e1-audio.mp4
+  VIDEO_URL: https://test
+  DOWNLOAD_USERNAME: ${{ secrets.DOWNLOAD_USERNAME }}
+  DOWNLOAD_PASSWORD: ${{ secrets.DOWNLOAD_PASSWORD }}
+  MEDIA_KEY: e7
+  FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+  FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
 
 jobs:
-  get-media-info:
+  encode-audio:
+    name: Encode Audio
     runs-on: ubuntu-20.04
 
     steps:
-      - run: |
-          curl --user $USB_HTTP_USERNAME:$USB_HTTP_PASSWORD  "$MEDIA_URL" --output $MEDIA_ID --no-progress-meter
+      - name: Encode Audio
+        run: |
+          curl -u "$DOWNLOAD_USERNAME:$DOWNLOAD_PASSWORD" "$AUDIO_URL" --output media --no-progress-meter
           sudo apt-get update > /dev/null
-          sudo apt-get install ffmpeg awscli > /dev/null
-          ffprobe -v quiet -print_format json -show_format -show_streams $MEDIA_ID
-          aws s3 cp $MEDIA_ID s3://astro-gnk-0001/$MEDIA_ID --endpoint-url=https://s3.wasabisys.com
+          sudo apt-get install ffmpeg ncftp > /dev/null
+          mkdir --parents output
+          ffmpeg -hide_banner -loglevel warning -i media -map 0:a:0 -codec:a:0 libopus -ac:a:0 2 -b:a:0 64k -map_metadata:g -1 -map_metadata:s:a:0 -1 -fflags +bitexact -flags:a:0 +bitexact -dash_segment_type mp4 -format_options movflags=skip_sidx:empty_hdlr_name=1 -seg_duration 10 -frag_duration 10 -init_seg_name 0 -media_seg_name '$Number$' -use_timeline 0 -hls_playlist 1 -hls_master_name master.m3u8 -f dash output/manifest.mpd
+          ncftpput -V -z -m -u "$FTP_USERNAME" -p "$FTP_PASSWORD" ny.storage.bunnycdn.com "$MEDIA_KEY/a" output/*
