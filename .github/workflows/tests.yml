@@ -4,7 +4,7 @@ on: workflow_dispatch
 
 env:
   AUDIO_URL: https://rayquaza.lw997.usbx.me/files/Friends.S01.1080p.BluRay.x264-TENEIGHTY%5Brartv%5D/friends-s1e1-audio.mp4
-  VIDEO_URL: https://rayquaza.lw997.usbx.me/files/Friends.S01.1080p.BluRay.x264-TENEIGHTY%5Brartv%5D/friends-s1e1-video.mp4
+  VIDEO_URL: https://rayquaza.lw997.usbx.me/files/friends-s01/friends-s1e1-video.mp4
   DOWNLOAD_USERNAME: ${{ secrets.DOWNLOAD_USERNAME }}
   DOWNLOAD_PASSWORD: ${{ secrets.DOWNLOAD_PASSWORD }}
   MEDIA_KEY: e7
@@ -61,7 +61,7 @@ jobs:
           xz --decompress ffmpeg.xz
           chmod +x ffmpeg
           mkdir --parents output
-          ./ffmpeg -hide_banner -loglevel warning -i media -map 0:v:0 -codec:v:0 libx265 -crf 24 -preset slow -filter:v:0 scale=854:-2 -x265-params no-open-gop=1:keyint=240:no-scenecut=1:no-info=1:vbv-maxrate=550:vbv-bufsize=1100 video.mp4
+          ./ffmpeg -hide_banner -loglevel warning -i media -map 0:v:0 -codec:v:0 libx265 -crf 24 -preset slow -filter:v:0 scale=854:-2 -x265-params no-open-gop=1:keyint=240:no-scenecut=1:no-info=1:vbv-maxrate=600:vbv-bufsize=1200 video.mp4
           ./ffmpeg -hide_banner -loglevel warning -i video.mp4 -map 0:v:0 -codec:v:0 copy -map_metadata:g -1 -map_metadata:s:v:0 -1 -fflags +bitexact -flags:v:0 +bitexact -dash_segment_type mp4 -format_options movflags=skip_sidx:empty_hdlr_name=1 -seg_duration 10 -frag_duration 10 -init_seg_name 0 -media_seg_name '$Number$' -use_timeline 0 -hls_playlist 1 -f dash output/manifest.mpd
           ncftpput -V -z -m -u "$FTP_USERNAME" -p "$FTP_PASSWORD" ny.storage.bunnycdn.com "$MEDIA_KEY/g" output/*
 
@@ -79,6 +79,6 @@ jobs:
           xz --decompress ffmpeg.xz
           chmod +x ffmpeg
           mkdir --parents output
-          ./ffmpeg -hide_banner -loglevel warning -i media -map 0:v:0 -codec:v:0 libx265 -crf 24 -preset slow -filter:v:0 scale=640:-2 -x265-params no-open-gop=1:keyint=240:no-scenecut=1:no-info=1:vbv-maxrate=300:vbv-bufsize=600 video.mp4
+          ./ffmpeg -hide_banner -loglevel warning -i media -map 0:v:0 -codec:v:0 libx265 -crf 24 -preset slow -filter:v:0 scale=640:-2 -x265-params no-open-gop=1:keyint=240:no-scenecut=1:no-info=1:vbv-maxrate=400:vbv-bufsize=800 video.mp4
           ./ffmpeg -hide_banner -loglevel warning -i video.mp4 -map 0:v:0 -codec:v:0 copy -map_metadata:g -1 -map_metadata:s:v:0 -1 -fflags +bitexact -flags:v:0 +bitexact -dash_segment_type mp4 -format_options movflags=skip_sidx:empty_hdlr_name=1 -seg_duration 10 -frag_duration 10 -init_seg_name 0 -media_seg_name '$Number$' -use_timeline 0 -hls_playlist 1 -f dash output/manifest.mpd
           ncftpput -V -z -m -u "$FTP_USERNAME" -p "$FTP_PASSWORD" ny.storage.bunnycdn.com "$MEDIA_KEY/f" output/*
